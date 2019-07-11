@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Airports</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+<body>
+<div ng-app="csvreader" ng-controller="AirportController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-2">
+                <select class="form-control" ng-model="selected" ng-change="filterTable()">
+                    <option selected="selected" value="cache"></option>
+                    <option ng-repeat="filter in filters" value="{{filter}}">{{filter}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered">
+                    <tr ng-repeat="airport in airportData">
+                        <td ng-repeat="field in airport.fields">{{field}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    var app = angular.module('csvreader', []);
+    app.controller('AirportController', function ($scope, $http) {
+        var airportResource = "http://"+ window.location.host + "/api/v1/airport";
+        $http.get(airportResource + "/all")
+            .then(function (response) {
+                $scope.cacheData = response.data;
+                $scope.airportData = $scope.cacheData;
+            });
+        $http.get(airportResource + "/filters")
+            .then(function (response) {
+                $scope.filters = response.data;
+            });
+        $scope.filterTable = function () {
+            if ($scope.selected === 'cache') {
+                $scope.airportData = $scope.cacheData;
+            } else {
+                $http.get(airportResource + "/filter", {params: {value: $scope.selected}})
+                    .then(function (response) {
+                        $scope.airportData = response.data;
+                    });
+            }
+        };
+    });
+</script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</html>
