@@ -56,7 +56,7 @@ public class CsvFileReaderService {
 
     /**
     *   Loads indexes for the selected column.
-    *@param columnIndexNum - номер колонки.
+    *@param columnIndexNum - number column.
     *@return
     *@throws IOException
     */
